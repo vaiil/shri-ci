@@ -1,0 +1,62 @@
+html
+    body
+        h1 Awesome CI
+        form(method='POST')
+            input(name='cmd' placeholder='Command')
+            input(name='commitHash' placeholder='Commit hash')
+            button(type='submit') Send
+        h2 Finished builds
+        table
+            thead
+                tr
+                    th Task
+                    th Commit
+                    th Status
+                    th
+            tbody
+                each build in builds
+                    tr
+                        td= build.id
+                        td= build.task ? build.task.commitHash : 'Unknown build'
+                        td= build.status ? 'failed' : 'success'
+                        td
+                            a(href=`/build/${build.id}`) Link
+
+        h2 Running builds
+        table
+            thead
+                tr
+                    th Hash
+                    th Agent data
+                    th
+            tbody
+                each task in pendingTasks
+                    tr
+                        td= task.id
+                        td= task.agent
+
+        h2 Deferred builds
+        table
+            thead
+                tr
+                    th Hash
+                    th Register time
+                    th
+            tbody
+                each task in deferredTasks
+                    tr
+                        td= task.id
+
+        h2 Agents
+        table
+            thead
+                tr
+                    th Host
+                    th Port
+                    th Status
+            tbody
+                each agent in agents
+                    tr
+                        td= agent.host
+                        td= agent.port
+                        td= agent.getStatus()

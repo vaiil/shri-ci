@@ -1,0 +1,40 @@
+html
+    body
+        a(href='/') go home
+        h1= `Build ${id} info`
+
+        p
+            b Status
+            br
+            =status ? 'failed' : 'success'
+        p
+            b exit code
+            br
+            =status
+
+        p
+            b Commit Hash
+            br
+            =task ? task.commitHash : 'Unknown repo'
+
+        if stdout
+            h2= 'Output'
+            code= stdout
+
+        if stderr
+            h2= 'Error'
+            code= stderr
+
+        if task
+            h2= 'Additional info'
+            p
+                b= 'Cmd:'
+                br
+                code= task.cmd
+            if task.agent
+                p
+                    b= 'Agent'
+                    br
+                    code= task.agent
+
+
