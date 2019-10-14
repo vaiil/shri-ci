@@ -1,32 +1,32 @@
 # shri-ci
 Simple continuous Integration system
 
-##Установка:
+## Установка:
 ```shell script
 git clone https://github.com/vaiil/shri-ci.git
-npm --prefix agent i
-npm --prefix server i
+npm --prefix ./agent i
+npm --prefix ./server i
 ```
 
-##Запуск сервера
+## Запуск сервера
 ```shell script
-npm --prefix server start
+npm --prefix ./server start
 ```
-###Параметры:
+### Параметры:
 * Порт (--port или env.PORT), по умолчанию 3000
 * Репозиторий (--repo или env.REPO), по умолчанию текущий (https://github.com/vaiil/shri-ci.git) 
 
 
-##Запуск агента
+## Запуск агента
 ```shell script
-npm --prefix agent start -- --port 3001
+npm --prefix ./agent start -- --port 3001
 ```
-###Параметры:
+### Параметры:
 * Порт (--port или env.PORT), по умолчанию 3000
 * Host агента (--host или env.HOST), по умолчанию 'localhost'
 * URL сервера (--server или env.SERVER_URL), по умолчанию текущий (http://localhost:3000) 
 
 
 
-###Особенности реализации
+### Особенности реализации
 ...В процессе доработки :)
