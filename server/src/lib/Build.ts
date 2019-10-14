@@ -1,6 +1,6 @@
 import Task from './Task'
 import Agent from './Agent'
-import { RegisterBuildRequest } from '../../../@types/RegisterBuildRequest'
+import { RegisterBuildRequest } from 'shri-ci-typings'
 
 export default class Build {
   readonly id: string

@@ -1,15 +1,18 @@
 import Agent from './Agent'
 import Task, { TaskParams } from './Task'
 import Build from './Build'
-import { RegisterAgentParams } from '../../../@types/RegisterAgentParams'
-import { AgentStatus } from '../../../@types/AgentStatus'
-import { RegisterBuildRequest } from '../../../@types/RegisterBuildRequest'
+import { RegisterAgentParams, RegisterBuildRequest, AgentStatus } from 'shri-ci-typings'
 
 export default class CiApp {
   private readonly agents: Array<Agent> = []
   private readonly pendingTasks: Map<string, Task> = new Map<string, Task>()
   private readonly deferredTasks: Array<Task> = []
   private readonly builds: Array<Build> = []
+  private readonly repo: string
+
+  constructor(repo: string) {
+    this.repo = repo
+  }
 
   public registerAgent(props: RegisterAgentParams) {
     const agent = new Agent(props)
@@ -27,7 +30,7 @@ export default class CiApp {
   }
 
   public addTask(params: TaskParams) {
-    const task = new Task(params)
+    const task = new Task(params, this.repo)
     const agent = this.agents.find(agent => agent.getStatus() === AgentStatus.ready)
     if (agent) {
       this.run(task, agent)

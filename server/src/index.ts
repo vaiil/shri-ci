@@ -1,8 +1,20 @@
 import express from 'express'
+import { config } from 'dotenv'
+import minimist from 'minimist'
 import CiApp from './lib/CiApp'
+import process from 'process'
 
+config()
 
-const port = 3000
+const argv = minimist(process.argv)
+
+const port = parseInt(argv.port || process.env.PORT || 3000)
+
+const repo = argv.repo || process.env.report || 'https://github.com/vaiil/shri-ci.git'
+
+if (!repo) {
+  process.exit(1)
+}
 
 const app = express()
 
@@ -10,7 +22,7 @@ app.use(express.json())
 app.use(express.urlencoded())
 
 
-const ci = new CiApp()
+const ci = new CiApp(repo)
 
 app.set('view engine', 'pug')
 

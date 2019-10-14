@@ -1,8 +1,6 @@
 import Task from './Task'
 import fetch from 'node-fetch'
-import { RegisterAgentParams } from '../../../@types/RegisterAgentParams'
-import { StartBuildRequest } from '../../../@types/StartBuildRequest'
-import { AgentStatus } from '../../../@types/AgentStatus'
+import { RegisterAgentParams, AgentStatus, StartBuildRequest } from 'shri-ci-typings'
 
 
 export default class Agent {

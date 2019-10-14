@@ -14,12 +14,12 @@ export default class Task {
   readonly repoUrl: string
   private agent: Agent | null = null
 
-  constructor({ cmd, commitHash }: TaskParams) {
+  constructor({ cmd, commitHash }: TaskParams, repo: string) {
     this.registeredAt = Date.now()
     this.cmd = cmd
     this.commitHash = commitHash
     this.id = uniqueString()
-    this.repoUrl = 'https://github.com/vaiil/shri-ci.git'
+    this.repoUrl = repo
   }
 
   setAgent(agent: Agent) {

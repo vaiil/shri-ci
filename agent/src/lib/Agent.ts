@@ -1,11 +1,8 @@
-import { RegisterAgentParams } from '../../../@types/RegisterAgentParams'
 import fetch from 'node-fetch'
-import { StartBuildRequest } from '../../../@types/StartBuildRequest'
-import { AgentStatus } from '../../../@types/AgentStatus'
 import { exec } from 'child_process'
 import { promisify } from 'util'
 import { dir } from 'tmp-promise'
-import { RegisterBuildRequest } from '../../../@types/RegisterBuildRequest'
+import { RegisterBuildRequest, RegisterAgentParams, StartBuildRequest, AgentStatus } from 'shri-ci-typings'
 
 const execPromise = promisify(exec)
 
@@ -92,12 +89,10 @@ export default class Agent {
     })
       .then(response => {
         const data = response.json()
-        return data.then(data => {
-          if (response.status !== 200) {
-            return Promise.reject(data.message || 'Error')
-          }
-          return new Agent()
-        })
+        if (response.status !== 200) {
+          throw data || 'Error'
+        }
+        return new Agent()
       })
   }
 

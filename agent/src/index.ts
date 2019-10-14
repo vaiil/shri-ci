@@ -1,10 +1,19 @@
 import express from 'express'
+import { config } from 'dotenv'
+import minimist from 'minimist'
 import Agent from './lib/Agent'
+import process from "process"
 
 const app = express()
 app.use(express.json())
 
-const port = process.env.port ? parseInt(process.env.port) : 3001
+
+config()
+
+const argv = minimist(process.argv)
+
+const port = parseInt(argv.port || process.env.PORT || 3000)
+
 const url = process.env.port || 'localhost'
 
 Agent.createAgent({
@@ -16,7 +25,7 @@ Agent.createAgent({
       agent.registerBuildTask(req.body)
       res.send({ status: 'success' })
     })
-    app.listen(3001)
+    app.listen(port)
   })
   .catch(reason => {
     console.log('Could not create agent by the following reason:')
