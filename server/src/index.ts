@@ -10,7 +10,7 @@ const argv = minimist(process.argv)
 
 const port = parseInt(argv.port || process.env.PORT || 3000)
 
-const repo = argv.repo || process.env.report || 'https://github.com/vaiil/shri-ci.git'
+const repo = argv.repo || process.env.REPO || 'https://github.com/vaiil/shri-ci.git'
 
 if (!repo) {
   process.exit(1)
@@ -62,4 +62,4 @@ app.post('/notify_build_result', (req, res) => {
 
 app.listen(port)
 
-console.log(`Server are running: http://localhost:${port}/`)
+console.log(`Server is running: http://localhost:${port}/`)

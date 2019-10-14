@@ -79,7 +79,6 @@ export default class Agent {
   }
 
   static async createAgent(params: RegisterAgentParams) {
-    console.log(params)
     return fetch(this.getRegisterUrl(), {
       method: 'post',
       headers: {
