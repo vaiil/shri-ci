@@ -1,7 +1,7 @@
 import fetch from 'node-fetch'
 import { exec } from 'child_process'
 import { promisify } from 'util'
-import { dir } from 'tmp-promise'
+import { dir, DirectoryResult } from 'tmp-promise'
 import { RegisterBuildRequest, RegisterAgentParams, StartBuildRequest, AgentStatus } from 'shri-ci-typings'
 
 const execPromise = promisify(exec)
@@ -16,7 +16,7 @@ export default class Agent {
     if (this.status === AgentStatus.working) {
       throw new Error('Agent is busy')
     }
-    this.startBuildTask(params).then(this.notify, this.notifyFatal)
+    this.startBuildTask(params).then(this.notify)
   }
 
   async notify(build: RegisterBuildRequest) {
@@ -30,14 +30,8 @@ export default class Agent {
     })
       .then(response => {
         const data = response.json()
-        console.log('success build')
         //TODO add logic if server is down or returns error
       })
-  }
-
-  async notifyFatal(reason: Error) {
-    //TODO implement
-    console.log(reason)
   }
 
   async downloadRepo(path: string, repoUrl: string, ref: string) {
@@ -50,13 +44,19 @@ export default class Agent {
   }
 
   async runCommand(path: string, cmd: string) {
+    return {
+      ...await execPromise(cmd, {
+        cwd: path
+      }),
+      status: 0
+    }
+
+  }
+
+  async build(tmp: DirectoryResult, params: StartBuildRequest) {
     try {
-      return {
-        ...await execPromise(cmd, {
-          cwd: path
-        }),
-        status: 0
-      }
+      await this.downloadRepo(tmp.path, params.repoUrl, params.commitHash)
+      return await this.runCommand(tmp.path, params.cmd)
     } catch (error) {
       return {
         status: error.code,
@@ -69,12 +69,11 @@ export default class Agent {
 
   async startBuildTask(params: StartBuildRequest): Promise<RegisterBuildRequest> {
     const tmp = await dir({ unsafeCleanup: true })
-    await this.downloadRepo(tmp.path, params.repoUrl, params.commitHash)
-    const buildCommandResult = await this.runCommand(tmp.path, params.cmd)
+    const result = await this.build(tmp, params)
     await tmp.cleanup()
     return {
       id: params.id,
-      ...buildCommandResult
+      ...result
     }
   }
 

@@ -1,9 +1,12 @@
 # shri-ci
 Simple continuous Integration system
 
+Точно работает на Ubuntu, на windows точно есть проблемы (и с запуском, и с работой) из-за ее cmd.  
+
 ## Установка:
 ```shell script
-git clone https://github.com/vaiil/shri-ci.git
+git clone https://github.com/vaiil/shri-ci.git vail-shri-ci
+cd vail-shri-ci
 npm --prefix ./agent i
 npm --prefix ./server i
 ```
