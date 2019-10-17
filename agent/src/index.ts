@@ -2,7 +2,7 @@ import express from 'express'
 import { config } from 'dotenv'
 import minimist from 'minimist'
 import Agent from './lib/Agent'
-import process from "process"
+import process from 'process'
 
 const app = express()
 app.use(express.json())
@@ -11,8 +11,6 @@ app.use(express.json())
 config()
 
 const argv = minimist(process.argv)
-
-const dockerPort = 8080
 
 const port = parseInt(argv.port || process.env.PORT || 3000)
 
@@ -29,7 +27,7 @@ Agent.createAgent({
       agent.registerBuildTask(req.body)
       res.send({ status: 'success' })
     })
-    app.listen(dockerPort)
+    app.listen(port)
     console.log(`Agent is running: http://${host}:${port}/`)
   })
   .catch(reason => {
