@@ -12,6 +12,8 @@ config()
 
 const argv = minimist(process.argv)
 
+const dockerPort = 8080
+
 const port = parseInt(argv.port || process.env.PORT || 3000)
 
 const host = argv.host || process.env.AGENT_HOST || 'localhost'
@@ -27,7 +29,7 @@ Agent.createAgent({
       agent.registerBuildTask(req.body)
       res.send({ status: 'success' })
     })
-    app.listen(port)
+    app.listen(dockerPort)
     console.log(`Agent is running: http://${host}:${port}/`)
   })
   .catch(reason => {

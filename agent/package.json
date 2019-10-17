@@ -7,7 +7,8 @@
     "dev": "export SERVER_URL=http://localhost:3000 && ts-node src/index.ts",
     "build": "tsc",
     "start": "npm run build && node dist/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build-docker-image": "cd .. && docker build -t vail-ci-agent -f agent/Dockerfile ."
   },
   "author": "",
   "license": "ISC",
