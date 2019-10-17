@@ -78,7 +78,11 @@ export default class CiApp {
   private run(task: Task, freeAgent: Agent) {
     task.setAgent(freeAgent)
     this.pendingTasks.set(task.id, task)
-    freeAgent.run(task)
+    freeAgent.run(task).catch(() => {
+      freeAgent.setFailed()
+      this.pendingTasks.delete(task.id)
+      this.deferredTasks.push(task)
+    })
   }
 
   private runFromQueue(freeAgent: Agent) {

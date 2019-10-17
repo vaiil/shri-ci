@@ -1,6 +1,6 @@
 import Task from './Task'
 import fetch from 'node-fetch'
-import { RegisterAgentParams, AgentStatus, StartBuildRequest } from 'shri-ci-typings'
+import { AgentStatus, RegisterAgentParams, StartBuildRequest } from 'shri-ci-typings'
 
 
 export default class Agent {
@@ -8,7 +8,6 @@ export default class Agent {
   public readonly port: number
   private status: AgentStatus
   private currentTask: Task | null = null
-  private fatalError: string | null = null
 
   constructor({ url, port }: RegisterAgentParams) {
     this.host = url
@@ -19,10 +18,11 @@ export default class Agent {
   run(task: Task) {
     this.status = AgentStatus.working
     this.currentTask = task
-    return this.makeRequest(task).catch((reason) => {
-      this.fatalError = reason
-      this.status = AgentStatus.failed
-    })
+    return this.makeRequest(task)
+  }
+
+  setFailed() {
+    this.status = AgentStatus.failed
   }
 
   getStatus() {
