@@ -29,6 +29,10 @@ export default class Agent {
     return this.status
   }
 
+  isFree() {
+    return this.status === AgentStatus.ready
+  }
+
   free() {
     this.currentTask = null
     this.status = AgentStatus.ready
