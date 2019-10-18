@@ -35,7 +35,7 @@ export default class Agent {
   }
 
   async downloadRepo(path: string, repoUrl: string, ref: string) {
-    await execPromise(`git clone '${repoUrl}' . && git checkout '${ref}'`, {
+    await execPromise(`git clone ${repoUrl} . && git checkout ${ref}`, {
       cwd: path,
       env: {
         GIT_TERMINAL_PROMPT: '0'

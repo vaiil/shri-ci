@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "export SERVER_URL=http://localhost:3000 && ts-node src/index.ts",
+    "dev": "ts-node src/index.ts",
     "build": "tsc",
     "start": "docker run --rm -it --network host vail-ci-agent",
     "test": "echo \"Error: no test specified\" && exit 1",
