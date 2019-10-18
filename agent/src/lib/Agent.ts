@@ -8,6 +8,16 @@ const execPromise = promisify(exec)
 
 export default class Agent {
   private status: AgentStatus = AgentStatus.ready
+  private taskId: string | null = null
+  private readonly params: RegisterAgentParams
+
+  constructor(params: RegisterAgentParams) {
+    this.params = params
+  }
+
+  getTaskId() {
+    return this.taskId
+  }
 
   registerBuildTask(params: StartBuildRequest) {
     if (this.status === AgentStatus.failed) {
@@ -16,6 +26,7 @@ export default class Agent {
     if (this.status === AgentStatus.working) {
       throw new Error('Agent is busy')
     }
+    this.taskId = params.id
     this.startBuildTask(params).then(this.notify)
   }
 
@@ -35,7 +46,7 @@ export default class Agent {
   }
 
   async downloadRepo(path: string, repoUrl: string, ref: string) {
-    await execPromise(`git clone '${repoUrl}' . && git checkout '${ref}'`, {
+    await execPromise(`git clone ${repoUrl} . && git checkout ${ref}`, {
       cwd: path,
       env: {
         GIT_TERMINAL_PROMPT: '0'
@@ -77,20 +88,19 @@ export default class Agent {
     }
   }
 
-  static async createAgent(params: RegisterAgentParams) {
-    return fetch(this.getRegisterUrl(), {
+  async registerAgent() {
+    return fetch(Agent.getRegisterUrl(), {
       method: 'post',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(params)
+      body: JSON.stringify(this.params)
     })
       .then(response => {
         const data = response.json()
         if (response.status !== 200) {
           throw data || 'Error'
         }
-        return new Agent()
       })
   }
 

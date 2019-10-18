@@ -1,7 +1,7 @@
 import Agent from './Agent'
 import Task, { TaskParams } from './Task'
 import Build from './Build'
-import { RegisterAgentParams, RegisterBuildRequest, AgentStatus } from 'shri-ci-typings'
+import { RegisterAgentParams, RegisterBuildRequest } from 'shri-ci-typings'
 
 export default class CiApp {
   private readonly agents: Array<Agent> = []
@@ -31,12 +31,8 @@ export default class CiApp {
 
   public addTask(params: TaskParams) {
     const task = new Task(params, this.repo)
-    const agent = this.agents.find(agent => agent.getStatus() === AgentStatus.ready)
-    if (agent) {
-      this.run(task, agent)
-    } else {
-      this.deferredTasks.push(task)
-    }
+    this.deferredTasks.push(task)
+    this.checkQueue()
     return task.id
   }
 
@@ -79,12 +75,63 @@ export default class CiApp {
     task.setAgent(freeAgent)
     this.pendingTasks.set(task.id, task)
     freeAgent.run(task)
+      .then(() => {
+        const checker = setInterval(() => {
+          if (!this.pendingTasks.has(task.id) || task.getAgent() !== freeAgent) {
+            clearInterval(checker)
+            return
+          }
+          freeAgent.checkStatus()
+            .then(async res => {
+              const data = await res.json()
+              /** Task has been finished */
+              if (!this.pendingTasks.has(task.id) || task.getAgent() !== freeAgent) {
+                clearInterval(checker)
+                return
+              }
+              /** Cannot reach the agent or wrong agent response */
+              if (res.status !== 200 || data !== task.id) {
+                clearInterval(checker)
+                throw new Error('Agent failed')
+              }
+            })
+            .catch(() => {
+              clearInterval(checker)
+              freeAgent.setFailed()
+              this.pendingTasks.delete(task.id)
+              this.deferredTasks.push(task)
+              this.checkQueue()
+            })
+        }, 3000)
+      })
+      .catch(
+        () => {
+          freeAgent.setFailed()
+          this.pendingTasks.delete(task.id)
+          this.deferredTasks.push(task)
+          this.checkQueue()
+        })
+  }
+
+  private getFreeAgent() {
+    return this.agents.find(agent => agent.isFree())
   }
 
   private runFromQueue(freeAgent: Agent) {
     const task = this.deferredTasks.shift()
     if (task) {
       this.run(task, freeAgent)
+    }
+  }
+
+  /**
+   * @desc Try to run first task from queue if free agent exists
+   * We need to do it manually after pushing new tasks to queue
+   */
+  private checkQueue() {
+    const freeAgent = this.getFreeAgent()
+    if (freeAgent) {
+      this.runFromQueue(freeAgent)
     }
   }
 }
