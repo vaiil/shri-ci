@@ -7,9 +7,10 @@ Simple continuous Integration system
 ```shell script
 git clone https://github.com/vaiil/shri-ci.git vail-shri-ci
 cd vail-shri-ci
-npm --prefix ./agent i
 npm --prefix ./server i
 ```
+
+Агент устанавливать не нужно, так как он устанавливается в докер-контейнере.
 
 ## Запуск сервера
 ```shell script
@@ -22,7 +23,7 @@ npm --prefix ./server start
 
 ## Запуск агента
 ```shell script
-npm --prefix ./agent build-docker-image
+npm --prefix ./agent run build-docker-image
 npm --prefix ./agent start -- --port 3001
 ```
 ### Параметры:
