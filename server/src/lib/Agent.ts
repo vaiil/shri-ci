@@ -1,6 +1,7 @@
 import Task from './Task'
 import fetch from 'node-fetch'
 import { AgentStatus, RegisterAgentParams, StartBuildRequest } from 'shri-ci-typings'
+import { response } from 'express'
 
 
 export default class Agent {
@@ -46,8 +47,16 @@ export default class Agent {
     return this.host + ':' + this.port
   }
 
+  checkStatus() {
+    return fetch(this.getAgentUrl())
+  }
+
+  private getAgentUrl() {
+    return `http://${this.host}:${this.port}/`
+  }
+
   private getUrl() {
-    return `http://${this.host}:${this.port}/build`
+    return this.getAgentUrl() + 'build'
   }
 
   private makeRequest(task: Task) {

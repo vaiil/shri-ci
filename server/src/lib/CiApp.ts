@@ -74,12 +74,43 @@ export default class CiApp {
   private run(task: Task, freeAgent: Agent) {
     task.setAgent(freeAgent)
     this.pendingTasks.set(task.id, task)
-    freeAgent.run(task).catch(() => {
-      freeAgent.setFailed()
-      this.pendingTasks.delete(task.id)
-      this.deferredTasks.push(task)
-      this.checkQueue()
-    })
+    freeAgent.run(task)
+      .then(() => {
+        const checker = setInterval(() => {
+          if (!this.pendingTasks.has(task.id) || task.getAgent() !== freeAgent) {
+            clearInterval(checker)
+            return
+          }
+          freeAgent.checkStatus()
+            .then(async res => {
+              const data = await res.json()
+              /** Task has been finished */
+              if (!this.pendingTasks.has(task.id) || task.getAgent() !== freeAgent) {
+                clearInterval(checker)
+                return
+              }
+              /** Cannot reach the agent or wrong agent response */
+              if (res.status !== 200 || data !== task.id) {
+                clearInterval(checker)
+                throw new Error('Agent failed')
+              }
+            })
+            .catch(() => {
+              clearInterval(checker)
+              freeAgent.setFailed()
+              this.pendingTasks.delete(task.id)
+              this.deferredTasks.push(task)
+              this.checkQueue()
+            })
+        }, 3000)
+      })
+      .catch(
+        () => {
+          freeAgent.setFailed()
+          this.pendingTasks.delete(task.id)
+          this.deferredTasks.push(task)
+          this.checkQueue()
+        })
   }
 
   private getFreeAgent() {
