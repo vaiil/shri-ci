@@ -8,6 +8,11 @@ const execPromise = promisify(exec)
 
 export default class Agent {
   private status: AgentStatus = AgentStatus.ready
+  private taskId: string | null = null
+
+  getTaskId() {
+    return this.taskId
+  }
 
   registerBuildTask(params: StartBuildRequest) {
     if (this.status === AgentStatus.failed) {
@@ -16,6 +21,7 @@ export default class Agent {
     if (this.status === AgentStatus.working) {
       throw new Error('Agent is busy')
     }
+    this.taskId = params.id
     this.startBuildTask(params).then(this.notify)
   }
 

@@ -23,6 +23,11 @@ Agent.createAgent({
   url: host
 })
   .then(agent => {
+    /** Ping url */
+    app.get('/', (req, res) => {
+      res.json(agent.getTaskId())
+    })
+    /** Build url */
     app.post('/build', (req, res) => {
       agent.registerBuildTask(req.body)
       res.send({ status: 'success' })
