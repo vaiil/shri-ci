@@ -16,7 +16,7 @@
     "express": "^4.17.1",
     "minimist": "^1.2.0",
     "node-fetch": "^2.6.0",
-    "pug": "^2.0.4",
+    "pug": "^3.0.1",
     "unique-string": "^2.0.0"
   },
   "devDependencies": {
